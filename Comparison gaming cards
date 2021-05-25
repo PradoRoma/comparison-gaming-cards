@@ -1,0 +1,156 @@
+class Rank:
+    valid_values = {2,3,4,5,6,7,8,9,10,'J','Q','K','A'}
+    weights = {
+        2:2,
+        3:3,
+        4:4,
+        5:5,
+        6:6,
+        7:7,
+        8:8,
+        9:9,
+        10:10,
+        'J':11,
+        'Q':12,
+        'K':13,
+        'A':14
+    }
+
+    def __init__(self,name):
+        if name not in self.valid_values:
+            raise ValueError('Неправильное значение карты', name)
+
+        self.value = name
+
+    def __gt__(self, other):
+        if not isinstance(other, Rank):
+            return NotImplemented
+        return  self.weights[self.value] > other.weights[other.value]
+
+    def __lt__(self, other):
+        if not isinstance(other, Rank):
+            return NotImplemented
+        return self.weights[self.value] < other.weights[other.value]
+
+    def __eq__(self, other):
+        if not isinstance(other, Rank):
+            return NotImplemented
+        return self.weights[self.value] == other.weights[other.value]
+
+    def __ne__(self, other):
+        if not  isinstance(other, Rank):
+            return NotImplemented
+        return self.weights[self.value] != other.weights[other.value]
+
+    def __ge__(self, other):
+        if not isinstance(other, Rank):
+            return NotImplemented
+        return self.weights[self.value] >= other.weights[other.value]
+
+    def __le__(self, other):
+        if not  isinstance(other, Rank):
+            return NotImplemented
+        return self.weights[self.value] <= other.weights[other.value]
+
+    def __str__(self):
+        return str(self.value)
+
+
+class Suit:
+    valid_values = {'hearts', 'spades', 'clubs', 'diamonds'}
+    weights = {
+        'hearts': 1,
+        'clubs': 2,
+        'diamonds': 3,
+        'spades': 4
+    }
+    symbols = {
+        'hearts': '\u2665',
+        'clubs': '\u2663',
+        'diamonds': '\u2666',
+        'spades': '\u2660'
+    }
+
+    def __init__(self, name):
+        if name not in self.valid_values:
+            raise ValueError('Неправильная масть карты', name)
+
+        self.value = name
+
+    def __gt__(self, other):
+        if not isinstance(other, Suit):
+            return NotImplemented
+        return  self.weights[self.value] > other.weights[other.value]
+
+    def __lt__(self, other):
+        if not isinstance(other, Suit):
+            return NotImplemented
+        return  self.weights[self.value] < other.weights[other.value]
+
+    def __eq__(self, other):
+        if not isinstance(other, Suit):
+            return NotImplemented
+        return  self.weights[self.value] == other.weights[other.value]
+
+    def __ne__(self, other):
+        if not isinstance(other, Suit):
+            return NotImplemented
+        return  self.weights[self.value] != other.weights[other.value]
+
+    def __ge__(self, other):
+        if not isinstance(other, Suit):
+            return NotImplemented
+        return  self.weights[self.value] >= other.weights[other.value]
+
+    def __le__(self, other):
+        if not isinstance(other, Suit):
+            return NotImplemented
+        return  self.weights[self.value] <= other.weights[other.value]
+
+    def __str__(self):
+        return self.symbols[self.value]
+
+
+
+class Card:
+
+    def __init__(self, rank, suit):
+        self.rank = Rank(rank)
+        self.suit = Suit(suit)
+
+    def __repr__(self):
+        return  str(self.rank) +" " + str(self.suit)
+
+    def __eq__(self, other):
+        return  (self.rank == other.rank) and (self.suit == other.suit)
+
+    def __gt__(self, other):
+        if self.suit == other.suit:
+            return  self.rank > other.rank
+        else:
+            return self.suit > other.suit
+
+    def __ge__(self, other):
+        return self>other or self==other
+
+c1 = Card(5,"hearts")
+c2 = Card('A', "clubs")
+
+print(c1)
+print(c2)
+print(c1<c2)
+
+c3 = Card(9,"spades")
+c4 = Card(10, "diamonds")
+
+print(c3)
+print(c4)
+print(c3<c4)
+
+# Ответы:
+# 5 ♥
+# A ♣
+# True
+# 9 ♠
+# 10 ♦
+# False
