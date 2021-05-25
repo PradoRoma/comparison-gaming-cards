@@ -131,7 +131,7 @@ class Card:
             return self.suit > other.suit
 
     def __ge__(self, other):
-        return self>other or self==other
+        return self>other or self == other
 
 c1 = Card(5,"hearts")
 c2 = Card('A', "clubs")
