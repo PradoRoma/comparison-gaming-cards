@@ -1,0 +1,199 @@
+import random
+import itertools
+
+class Weightable:
+    def __gt__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return  self.weights[self.value] > other.weights[other.value]
+
+    def __lt__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] < other.weights[other.value]
+
+    def __eq__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] == other.weights[other.value]
+
+    def __ne__(self, other):
+        if not  isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] != other.weights[other.value]
+
+    def __ge__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] >= other.weights[other.value]
+
+    def __le__(self, other):
+        if not  isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] <= other.weights[other.value]
+
+class Rank(Weightable):
+    valid_values = {2,3,4,5,6,7,8,9,10,'J','Q','K','A'}
+    weights = {
+        2:2,
+        3:3,
+        4:4,
+        5:5,
+        6:6,
+        7:7,
+        8:8,
+        9:9,
+        10:10,
+        'J':11,
+        'Q':12,
+        'K':13,
+        'A':14
+    }
+
+    def __init__(self,name):
+        if name not in self.valid_values:
+            raise ValueError('Неправильное значение карты', name)
+
+        self.value = name
+
+
+    def __str__(self):
+        return str(self.value)
+
+    @classmethod
+    def get_valid_values(cls):
+        return cls.valid_values
+
+
+class Suit(Weightable):
+    valid_values = {'hearts', 'spades', 'clubs', 'diamonds'}
+    weights = {
+        'hearts': 1,
+        'clubs': 2,
+        'diamonds': 3,
+        'spades': 4
+    }
+    symbols = {
+        'hearts': '\u2665',
+        'clubs': '\u2663',
+        'diamonds': '\u2666',
+        'spades': '\u2660'
+    }
+
+    def __init__(self, name):
+        if name not in self.valid_values:
+            raise ValueError('Неправильная масть карты', name)
+
+        self.value = name
+
+
+    def __str__(self):
+        return self.symbols[self.value]
+
+    @classmethod
+    def get_valid_values(cls):
+        return cls.valid_values
+
+
+class Card:
+
+    def __init__(self, rank, suit):
+        self.rank = Rank(rank)
+        self.suit = Suit(suit)
+
+    def __repr__(self):
+        return  str(self.rank) +" " + str(self.suit)
+
+    def __eq__(self, other):
+        return  (self.rank == other.rank) and (self.suit == other.suit)
+
+    def __gt__(self, other):
+        if self.suit == other.suit:
+            return  self.rank > other.rank
+        else:
+            return self.suit > other.suit
+
+    def __ge__(self, other):
+        return self>other or self == other
+
+    @staticmethod
+    def random_cards():
+        r = random.choice(list(Rank.get_valid_values()))
+        s = random.choice(list(Suit.get_valid_values()))
+        return Card(r,s)
+
+    @staticmethod
+    def from_tuple(t): #Не обязательный метод, но он позволяет конвертировать получаемые карты в виде картежа в карту, которую мы хотим видеть.
+        if not isinstance(t, tuple):
+            raise TypeError('Полученные значения не картеж', t)
+
+        r,s = t
+        return Card(*t) # тоже самое, что и  Card(r,s)
+
+
+
+class Deck:
+
+    #Построение колоды двумя способами.
+    # 1 способ простой, через цикл в цикле for мы проходимся по значениям  get_valid_values, где создаем аргумент d, который получает различные комбинации карт,
+    # затем каждую комбинацию мы добавляем в список, потом мы возвращаем отсортированный список из всех видов карт.
+    
+    def deck_building():
+        deck = []
+        # А можно так:
+        for r in Rank.get_valid_values():
+           for s in Suit.get_valid_values():
+               d = Card(r,s)
+               deck.append(d)
+        return sorted(deck)
+
+    # 2 способ упрощает код. Мы могли использовать list comprehension, но описывать цикл в цикле делает код менее красивым и читабельным.
+    # Модуль itertools.product() является аналогом вложенных циклов, тем самым укорачивает необходимый нам код.
+    
+    def build_deck():
+        deck1 = [Card(r,s) for r,s in itertools.product(Rank.get_valid_values(),Suit.get_valid_values())]
+        return sorted(deck1)
+
+
+
+
+c1 = Card(5,"hearts")
+c2 = Card('A', "clubs")
+c3 = Card.random_cards()
+c4 = Card.from_tuple((4, 'diamonds'))
+
+print(c1)
+print(c2)
+print(c3)
+print(c4)
+
+print(c1<c2)
+print(c3 > c1)
+print(c3 < c2)
+
+
+c5 = Deck.deck_building()
+print(c5)
+print(len(c5))
+
+c6 = Deck.build_deck()
+print(c6)
+print(len(c6))
+
+
+
+# Не нужная часть кода, можно удалить
+# c7 = Deck.build_deck()
+# random.shuffle(c7)
+# print(c7)
+#
+# m = random.choice(c7)
+# print(m)
+#
+# for l in enumerate(c7[:5]):
+#     print(l)
+#
+# for o, p in enumerate(c7):
+#     if o > 4:
+#        break
+#     print(p)
