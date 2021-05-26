@@ -1,4 +1,37 @@
-class Rank:
+import random
+
+class Weightable:
+    def __gt__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return  self.weights[self.value] > other.weights[other.value]
+
+    def __lt__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] < other.weights[other.value]
+
+    def __eq__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] == other.weights[other.value]
+
+    def __ne__(self, other):
+        if not  isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] != other.weights[other.value]
+
+    def __ge__(self, other):
+        if not isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] >= other.weights[other.value]
+
+    def __le__(self, other):
+        if not  isinstance(other, Weightable):
+            return NotImplemented
+        return self.weights[self.value] <= other.weights[other.value]
+
+class Rank(Weightable):
     valid_values = {2,3,4,5,6,7,8,9,10,'J','Q','K','A'}
     weights = {
         2:2,
@@ -22,41 +55,16 @@ class Rank:
 
         self.value = name
 
-    def __gt__(self, other):
-        if not isinstance(other, Rank):
-            return NotImplemented
-        return  self.weights[self.value] > other.weights[other.value]
-
-    def __lt__(self, other):
-        if not isinstance(other, Rank):
-            return NotImplemented
-        return self.weights[self.value] < other.weights[other.value]
-
-    def __eq__(self, other):
-        if not isinstance(other, Rank):
-            return NotImplemented
-        return self.weights[self.value] == other.weights[other.value]
-
-    def __ne__(self, other):
-        if not  isinstance(other, Rank):
-            return NotImplemented
-        return self.weights[self.value] != other.weights[other.value]
-
-    def __ge__(self, other):
-        if not isinstance(other, Rank):
-            return NotImplemented
-        return self.weights[self.value] >= other.weights[other.value]
-
-    def __le__(self, other):
-        if not  isinstance(other, Rank):
-            return NotImplemented
-        return self.weights[self.value] <= other.weights[other.value]
 
     def __str__(self):
         return str(self.value)
 
+    @classmethod
+    def get_valid_values(cls):
+        return cls.valid_values
 
-class Suit:
+
+class Suit(Weightable):
     valid_values = {'hearts', 'spades', 'clubs', 'diamonds'}
     weights = {
         'hearts': 1,
@@ -77,39 +85,12 @@ class Suit:
 
         self.value = name
 
-    def __gt__(self, other):
-        if not isinstance(other, Suit):
-            return NotImplemented
-        return  self.weights[self.value] > other.weights[other.value]
-
-    def __lt__(self, other):
-        if not isinstance(other, Suit):
-            return NotImplemented
-        return  self.weights[self.value] < other.weights[other.value]
-
-    def __eq__(self, other):
-        if not isinstance(other, Suit):
-            return NotImplemented
-        return  self.weights[self.value] == other.weights[other.value]
-
-    def __ne__(self, other):
-        if not isinstance(other, Suit):
-            return NotImplemented
-        return  self.weights[self.value] != other.weights[other.value]
-
-    def __ge__(self, other):
-        if not isinstance(other, Suit):
-            return NotImplemented
-        return  self.weights[self.value] >= other.weights[other.value]
-
-    def __le__(self, other):
-        if not isinstance(other, Suit):
-            return NotImplemented
-        return  self.weights[self.value] <= other.weights[other.value]
-
     def __str__(self):
         return self.symbols[self.value]
 
+    @classmethod
+    def get_valid_values(cls):
+        return cls.valid_values
 
 
 class Card:
@@ -133,24 +114,32 @@ class Card:
     def __ge__(self, other):
         return self>other or self == other
 
+    @staticmethod
+    def random_cards():
+        r = random.choice(list(Rank.get_valid_values()))
+        s = random.choice(list(Suit.get_valid_values()))
+        return Card(r,s)
+
+    @staticmethod
+    def from_tuple(t): #Не обязательный метод, но он позволяет конвертировать получаемые карты в виде картежа в карту, которую мы хотим видеть.
+        if not isinstance(t, tuple):
+            raise TypeError('Полученные значения не картеж', t)
+
+        r,s = t
+        return Card(*t) # тоже самое, что и  Card(r,s)
+
+
+
 c1 = Card(5,"hearts")
 c2 = Card('A', "clubs")
+c3 = Card.random_cards()
+c4 = Card.from_tuple((4, 'diamonds'))
 
 print(c1)
 print(c2)
-print(c1<c2)
-
-c3 = Card(9,"spades")
-c4 = Card(10, "diamonds")
-
 print(c3)
 print(c4)
-print(c3<c4)
 
-# Ответы:
-# 5 ♥
-# A ♣
-# True
-# 9 ♠
-# 10 ♦
-# False
+print(c1<c2)
+print(c3 > c1)
+print(c3 < c2)
